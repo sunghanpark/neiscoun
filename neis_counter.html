@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>나이스 글자수 세기</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      
+      h1 {
+        font-size: 30px;
+        font-weight: bold;
+        color: #333;
+      }
+      
+      textarea {
+        width: 100%;
+        height: 100px;
+        margin-top: 10px;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+      }
+      
+      th, td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ccc;
+      }
+      
+      th {
+        background-color: #eee;
+      }
+      
+      .total {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>생기부 글자수 세기</h1>
+    
+    <form>
+      <label for="text">글자 입력:</label><br>
+      <textarea id="text" name="text"></textarea>
+    </form>
+    
+    <p>
+      글자수(byte): <span id="byte-count">0</span><br>
+      글자수(문자): <span id="char-count">0</span>
+    </p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>활동 유형</th>
+          <th>최대 byte 수</th>
+          <th>남은 byte 수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>자율활동</td>
+          <td>1500</td>
+          <td class="remaining" data-max="1500"></td>
+        </tr>
+        <tr>
+          <td>동아리활동</td>
+          <td>1500</td>
+          <td class="remaining" data-max="1500"></td>
+        </tr>
+        <tr>
+          <td>진로활동</td>
+          <td>2100</td>
+          <td class="remaining" data-max="2100"></td>
+        </tr>
+        <tr>
+          <td>교과세특</td>
+          <td>1500</td>
+          <td class="remaining" data-max="1500"></td>
+        </tr>
+        <tr>
+          <td>개인세특</td>
+          <td>1500</td>
+          <td class="remaining" data-max="1500"></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p id="vacation-message">
+      방학 아 오라!
+    </p>
+    
+    <script>
+      const byteCountEl = document.querySelector('#byte-count');
+      const charCountEl = document.querySelector('#char-count');
+      const textAreaEl = document.querySelector('#text');
+      const remainingEls = document.querySelectorAll('.remaining');
+      const vacationMessageEl = document.querySelector('#vacation-message');
+      
+      function countBytes(text) {
+        let count = 0;
+        for (let i = 0; i < text.length; i++) {
+          const code = text.charCodeAt(i);
+          if (code <= 128) {
+            count++;
+          } else {
+            count += 2;
+          }
+        }
+        return count;
+      }
+      
+      function updateCount() {
+        const text = textAreaEl.value;
+        const bytes = countBytes(text);
+        byteCountEl.textContent = bytes;
+        charCountEl.textContent = text.length;
+        
+        remainingEls.forEach(el => {
+          const maxBytes = parseInt(el.dataset.max);
+          const remainingBytes = maxBytes - countBytes(text);
+          el.textContent = remainingBytes;
+          
+          if (remainingBytes < 0) {
+            el.classList.add('total');
+            vacationMessageEl.style.display = 'block';
+          } else {
+            el.classList.remove('total');
+            vacationMessageEl.style.display = 'none';
+          }
+        });
+      }
+      
+      textAreaEl.addEventListener('input', updateCount);
+    </script>
+  </body>
+</html>
